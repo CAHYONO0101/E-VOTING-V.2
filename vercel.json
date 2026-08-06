@@ -10,11 +10,11 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "/api/index.ts?path=$1"
+      "destination": "/api/index"
     },
     {
       "source": "/api",
-      "destination": "/api/index.ts"
+      "destination": "/api/index"
     },
     {
       "source": "/((?!api/).*)",
@@ -22,4 +22,5 @@
     }
   ]
 }
+
 
