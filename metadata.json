@@ -1,0 +1,6 @@
+{
+  "name": "Pemilihan Ketua Karang Taruna",
+  "description": "Aplikasi Pemilihan Ketua Karang Taruna berbasis DPT, deteksi perangkat, dan real-count transparan.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

@@ -1,0 +1,15 @@
+{
+  "entities": {
+    "election_store": {
+      "title": "Election Store",
+      "description": "Stores election data including candidates, voters (DPT), and settings per organization code",
+      "type": "object",
+      "properties": {
+        "masterPin": { "type": "string" },
+        "activeOrgCode": { "type": "string" },
+        "orgs": { "type": "object" }
+      },
+      "required": ["activeOrgCode", "orgs"]
+    }
+  }
+}
