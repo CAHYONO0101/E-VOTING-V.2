@@ -93,6 +93,8 @@ interface EventStore {
   adminPin: string;
   title: string;
   subtitle: string;
+  appName?: string;
+  headerTagline?: string;
   logoUrl?: string;
   status: 'ACTIVE' | 'PAUSED' | 'CLOSED';
   candidates: Candidate[];
@@ -113,6 +115,8 @@ const DEFAULT_EVENT_1: EventStore = {
   adminPin: '1234',
   title: 'Pemilihan Ketua Karang Taruna Unit 05',
   subtitle: 'Periode 2026 - 2028 | Desa Sukamaju',
+  appName: 'E-VOTING KARANG TARUNA',
+  headerTagline: 'Pesta Demokrasi Pemuda Karang Taruna',
   status: 'ACTIVE',
   candidates: INITIAL_CANDIDATES,
   dpt: INITIAL_DPT,
@@ -300,6 +304,8 @@ export function getOrgStore(orgCode: string): EventStore {
       adminPin: '1234',
       title: `Pemilihan Ketua Pemuda (${cleanCode})`,
       subtitle: `Periode 2026 - 2028`,
+      appName: 'E-VOTING KARANG TARUNA',
+      headerTagline: 'Pesta Demokrasi Pemuda Karang Taruna',
       status: 'ACTIVE',
       candidates: [...INITIAL_CANDIDATES],
       dpt: [...INITIAL_DPT],
@@ -335,6 +341,8 @@ export function getCalculatedData(reqOrgCode?: string): ElectionData {
       name: o?.orgName || 'Organisasi',
       title: o?.title || '',
       subtitle: o?.subtitle || '',
+      appName: o?.appName || 'E-VOTING KARANG TARUNA',
+      headerTagline: o?.headerTagline || 'Pesta Demokrasi Pemuda Karang Taruna',
       status: o?.status || 'ACTIVE',
       totalDpt: oDpt.length,
       totalVotes: oCand.reduce((s, c) => s + (c?.jumlahSuara || 0), 0),
@@ -347,6 +355,8 @@ export function getCalculatedData(reqOrgCode?: string): ElectionData {
     orgName: event.orgName || 'Organisasi',
     title: event.title || 'Pemilihan Ketua',
     subtitle: event.subtitle || '',
+    appName: event.appName || 'E-VOTING KARANG TARUNA',
+    headerTagline: event.headerTagline || 'Pesta Demokrasi Pemuda Karang Taruna',
     logoUrl: event.logoUrl || '',
     status: event.status || 'ACTIVE',
     candidates: [...candidates].sort((a, b) => (a.noUrut || 0) - (b.noUrut || 0)),
@@ -377,31 +387,29 @@ app.use((req, res, next) => {
       const searchStr = parsedUrl.searchParams.toString();
       const prefix = cleanPath.startsWith('/api') ? '' : '/api';
       url = prefix + (cleanPath === '/' ? '' : cleanPath) + (searchStr ? '?' + searchStr : '');
-    } else {
-      // Strip Vercel file paths if present (e.g. /api/index.ts/election/data -> /api/election/data)
+      req.url = url;
+    } else if (url.startsWith('/api/index.ts') || url.startsWith('/api/index')) {
       if (url.startsWith('/api/index.ts')) {
         url = url.substring('/api/index.ts'.length);
       } else if (url.startsWith('/api/index')) {
         url = url.substring('/api/index'.length);
       }
-
-      // Ensure path starts with /api if missing or query string
-      if (!url || url === '/' || url.startsWith('?')) {
+      if (!url || url.startsWith('?')) {
         url = '/api' + url;
       } else if (!url.startsWith('/api')) {
         url = '/api' + (url.startsWith('/') ? url : '/' + url);
       }
+      req.url = url;
     }
 
     // Strip double /api/api/ prefix if generated
-    if (url.startsWith('/api/api/')) {
-      url = '/api/' + url.substring('/api/api/'.length);
+    if (req.url.startsWith('/api/api/')) {
+      req.url = '/api/' + req.url.substring('/api/api/'.length);
     }
   } catch (e) {
     console.error('URL normalization error:', e);
   }
 
-  req.url = url;
   next();
 });
 
@@ -876,7 +884,7 @@ app.post(['/api/admin/import-dpt', '/admin/import-dpt'], (req, res) => {
 // 9. Admin Settings & Controls
 app.post(['/api/admin/settings', '/admin/settings'], (req, res) => {
   try {
-    const { pin, status, newPin, title, subtitle, orgName, logoUrl, action, deviceId } = req.body || {};
+    const { pin, status, newPin, title, subtitle, appName, headerTagline, orgName, logoUrl, action, deviceId } = req.body || {};
     const orgCode = getOrgCodeFromReq(req);
     const event = getOrgStore(orgCode);
 
@@ -895,6 +903,12 @@ app.post(['/api/admin/settings', '/admin/settings'], (req, res) => {
     }
     if (subtitle !== undefined) {
       event.subtitle = subtitle;
+    }
+    if (appName !== undefined) {
+      event.appName = appName;
+    }
+    if (headerTagline !== undefined) {
+      event.headerTagline = headerTagline;
     }
     if (orgName !== undefined) {
       event.orgName = orgName;

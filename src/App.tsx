@@ -55,17 +55,7 @@ export default function App() {
     return '123456789';
   });
 
-  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('admin') === 'true' || params.get('admin') === '1') {
-        localStorage.setItem('e_voting_admin_unlocked', 'true');
-        return true;
-      }
-      return localStorage.getItem('e_voting_admin_unlocked') === 'true';
-    }
-    return false;
-  });
+  const [isAdminUnlocked, setIsAdminUnlocked] = useState<boolean>(false);
 
   const [footerClicks, setFooterClicks] = useState(0);
   const handleFooterSecretClick = () => {
@@ -269,7 +259,6 @@ export default function App() {
             activeOrgCode={activeOrgCode}
             onSelectOrgCode={handleSelectOrgCode}
             onRefreshData={() => fetchElectionData(activeOrgCode)}
-            initialPin={masterPin}
           />
         )}
       </main>

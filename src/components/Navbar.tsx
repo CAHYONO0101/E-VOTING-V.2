@@ -143,13 +143,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <KarangTarunaLogo size={38} className="w-9 h-9 sm:w-10 sm:h-10" />
                 )}
               </div>
-              <div className="hidden sm:block">
-                <div className="flex items-center space-x-2">
-                  <span className="font-extrabold text-base lg:text-xl tracking-tight uppercase text-white">
-                    E-VOTING KARANG TARUNA
+              <div>
+                <div className="flex items-center space-x-1 sm:space-x-2">
+                  <span className="font-extrabold text-sm sm:text-base lg:text-xl tracking-tight uppercase text-white leading-tight">
+                    {electionData?.appName || 'E-VOTING KARANG TARUNA'}
                   </span>
                 </div>
-                <p className="text-xs text-blue-200 truncate max-w-[200px] lg:max-w-xs">
+                <p className="text-[10px] sm:text-xs text-blue-200 truncate max-w-[130px] sm:max-w-[200px] lg:max-w-xs">
                   {electionData?.title || 'Pemilihan Ketua Karang Taruna'}
                 </p>
               </div>

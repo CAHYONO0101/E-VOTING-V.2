@@ -31,6 +31,8 @@ export interface OrgInfo {
   name: string;
   title: string;
   subtitle: string;
+  appName?: string;
+  headerTagline?: string;
   status: 'ACTIVE' | 'PAUSED' | 'CLOSED';
   totalDpt: number;
   totalVotes: number;
@@ -42,6 +44,8 @@ export interface ElectionData {
   orgName: string;
   title: string;
   subtitle: string;
+  appName?: string;
+  headerTagline?: string;
   logoUrl?: string;
   status: 'ACTIVE' | 'PAUSED' | 'CLOSED';
   candidates: Candidate[];

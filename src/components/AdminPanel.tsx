@@ -18,16 +18,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   onRefreshData,
   initialPin = ''
 }) => {
-  const [adminPin, setAdminPin] = useState(initialPin || '1234');
-  const [isAuthenticated, setIsAuthenticated] = useState(() => Boolean(initialPin));
+  const [adminPin, setAdminPin] = useState('');
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [authError, setAuthError] = useState('');
-
-  React.useEffect(() => {
-    if (initialPin) {
-      setAdminPin(initialPin);
-      setIsAuthenticated(true);
-    }
-  }, [initialPin]);
 
   const [activeAdminSubtab, setActiveAdminSubtab] = useState<'candidates' | 'dpt' | 'devices' | 'settings' | 'orgs'>('candidates');
 
@@ -175,7 +168,19 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [newPinInput, setNewPinInput] = useState('');
   const [titleInput, setTitleInput] = useState(electionData?.title || '');
   const [subtitleInput, setSubtitleInput] = useState(electionData?.subtitle || '');
+  const [appNameInput, setAppNameInput] = useState(electionData?.appName || 'E-VOTING KARANG TARUNA');
+  const [headerTaglineInput, setHeaderTaglineInput] = useState(electionData?.headerTagline || 'Pesta Demokrasi Pemuda Karang Taruna');
   const [logoUrlInput, setLogoUrlInput] = useState(electionData?.logoUrl || '');
+
+  React.useEffect(() => {
+    if (electionData) {
+      setTitleInput(electionData.title || '');
+      setSubtitleInput(electionData.subtitle || '');
+      setAppNameInput(electionData.appName || 'E-VOTING KARANG TARUNA');
+      setHeaderTaglineInput(electionData.headerTagline || 'Pesta Demokrasi Pemuda Karang Taruna');
+      setLogoUrlInput(electionData.logoUrl || '');
+    }
+  }, [electionData]);
 
   // Multi-Event / Org Management State
   const [showNewOrgModal, setShowNewOrgModal] = useState(false);
@@ -196,6 +201,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
           pin: adminPin,
           title: titleInput,
           subtitle: subtitleInput,
+          appName: appNameInput,
+          headerTagline: headerTaglineInput,
           logoUrl: logoUrlInput,
           newPin: newPinInput.trim() || undefined,
           orgCode: activeOrgCode
@@ -228,18 +235,25 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const handleAdminLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setAuthError('');
+    if (!adminPin.trim()) {
+      setAuthError('Silakan masukkan PIN Admin terlebih dahulu.');
+      return;
+    }
     try {
-      const res = await fetch('/api/admin/login', {
+      const res = await fetch(`/api/admin/login?org=${activeOrgCode}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pin: adminPin })
+        headers: { 
+          'Content-Type': 'application/json',
+          'X-Org-Code': activeOrgCode
+        },
+        body: JSON.stringify({ pin: adminPin.trim(), orgCode: activeOrgCode })
       });
       const data = await res.json();
       if (data.success) {
         setIsAuthenticated(true);
         showToast('Login Admin berhasil!', 'success');
       } else {
-        setAuthError(data.message || 'PIN Admin Salah! Default: 1234');
+        setAuthError(data.message || 'PIN Admin Salah!');
       }
     } catch (err) {
       setAuthError('Gagal menghubungkan ke server.');
@@ -548,14 +562,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           <div>
             <label className="block text-xs font-bold text-slate-700 uppercase mb-1.5">
-              PIN Admin (Default: 1234)
+              PIN Admin
             </label>
             <input
               id="input-admin-pin"
               type="password"
               value={adminPin}
               onChange={(e) => setAdminPin(e.target.value)}
-              placeholder="Masukkan PIN Admin (1234)"
+              placeholder="Masukkan PIN Admin"
               className="w-full bg-slate-50 text-slate-900 border-2 border-slate-300 rounded-xl px-4 py-3 text-center text-lg tracking-widest font-mono font-bold focus:outline-none focus:ring-2 focus:ring-amber-500"
               autoFocus
             />
@@ -884,6 +898,28 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
               <div className="space-y-1">
+                <label className="block text-slate-800 font-bold uppercase">Nama Header Navbar (Atas)</label>
+                <input
+                  type="text"
+                  value={appNameInput}
+                  onChange={(e) => setAppNameInput(e.target.value)}
+                  placeholder="Contoh: E-VOTING KARANG TARUNA"
+                  className="w-full bg-slate-50 border-2 border-slate-300 rounded-lg p-2.5 text-slate-900 font-bold"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <label className="block text-slate-800 font-bold uppercase">Tagline Lencana Hero Voting</label>
+                <input
+                  type="text"
+                  value={headerTaglineInput}
+                  onChange={(e) => setHeaderTaglineInput(e.target.value)}
+                  placeholder="Contoh: Pesta Demokrasi Pemuda Karang Taruna"
+                  className="w-full bg-slate-50 border-2 border-slate-300 rounded-lg p-2.5 text-slate-900 font-bold"
+                />
+              </div>
+
+              <div className="space-y-1">
                 <label className="block text-slate-800 font-bold uppercase">Judul Kegiatan / Pemilihan</label>
                 <input
                   type="text"
@@ -962,7 +998,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   type="password"
                   value={newPinInput}
                   onChange={(e) => setNewPinInput(e.target.value)}
-                  placeholder="Kosongkan jika tidak ingin mengubah PIN admin (Default: 1234)"
+                  placeholder="Kosongkan jika tidak ingin mengubah PIN admin"
                   className="w-full bg-slate-50 border-2 border-slate-300 rounded-lg p-2.5 text-slate-900 font-bold"
                 />
               </div>

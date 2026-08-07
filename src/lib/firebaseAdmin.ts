@@ -30,14 +30,16 @@ export function getAdminFirestore(): Firestore | null {
       }
     }
 
-    // 2. On Vercel / serverless without explicit service account key, skip ADC to prevent gRPC / metadata timeout
-    if (process.env.VERCEL || process.env.VERCEL_ENV || process.env.NOW_BUILDER || process.env.AWS_LAMBDA_FUNCTION_NAME) {
-      console.warn('Vercel/Serverless environment detected without explicit Service Account Key. Firestore cloud sync disabled for serverless function.');
-      return null;
-    }
+    // 2. Check if running in Vercel or non-GCP cloud environment without explicit service account key
+    // Prevent Google ADC from attempting metadata requests to 169.254.169.254 (which causes timeouts/500 errors on Vercel)
+    const isGcpEnvironment = Boolean(
+      process.env.K_SERVICE || 
+      process.env.GAE_APPLICATION || 
+      process.env.GOOGLE_APPLICATION_CREDENTIALS
+    );
 
-    // 3. Check if ADC credentials or Google Cloud environment exist before initializing without credentials
-    if (!process.env.GOOGLE_APPLICATION_CREDENTIALS && !process.env.K_SERVICE && !process.env.GCLOUD_PROJECT && !process.env.GAE_APPLICATION) {
+    if (!isGcpEnvironment) {
+      // Not running in GCP environment and no service account key supplied - skip Firestore to avoid timeout
       return null;
     }
 
