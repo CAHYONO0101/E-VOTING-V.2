@@ -46,7 +46,7 @@ export const SuccessVoteModal: React.FC<SuccessVoteModalProps> = ({
 
           <div className="space-y-2 text-xs">
             <div>
-              <span className="text-slate-500 block text-[10px] font-bold uppercase">Nama Pemilih DPT:</span>
+              <span className="text-slate-500 block text-[10px] font-bold uppercase">Identitas Suara Pemilih:</span>
               <strong className="text-slate-900 text-sm font-black uppercase">{receiptData.voterName}</strong>
             </div>
 

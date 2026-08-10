@@ -147,120 +147,15 @@ export const VotingTab: React.FC<VotingTabProps> = ({ electionData, onInitiateVo
         </div>
       )}
 
-      {/* Step 1: Verification Section */}
-      <div className="bg-white border-2 border-slate-300 rounded-lg p-6 shadow-sm space-y-5">
-        <div className="flex items-center justify-between border-b-2 border-slate-200 pb-4">
-          <div className="flex items-center space-x-3">
-            <span className="w-8 h-8 rounded bg-blue-900 text-white font-black flex items-center justify-center text-sm shadow">
-              1
-            </span>
-            <div>
-              <h2 className="text-lg font-black text-slate-900 uppercase tracking-wide">Verifikasi Anggota WA / DPT</h2>
-              <p className="text-xs text-slate-600 font-medium">Hanya anggota terdaftar di Grup WhatsApp / DPT Karang Taruna yang dapat menggunakan hak pilih ini</p>
-            </div>
-          </div>
-          {verifiedVoter && (
-            <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-bold border border-emerald-400 uppercase tracking-wider">
-              <CheckCircle className="w-4 h-4 text-emerald-600" />
-              <span>Anggota WA Terverifikasi</span>
-            </span>
-          )}
-        </div>
-
-        {/* WhatsApp Input & Submit */}
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <input
-              id="input-nik-voter"
-              type="text"
-              value={nikInput}
-              onChange={(e) => setNikInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleVerifyNik()}
-              placeholder="Masukkan Nomor WhatsApp Anda (contoh: 081234567891)"
-              disabled={deviceLocked || electionData?.status !== 'ACTIVE'}
-              className="w-full bg-slate-50 text-slate-900 border-2 border-slate-300 rounded-lg px-4 py-3 pl-11 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-blue-600 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-            />
-            <Search className="w-5 h-5 text-slate-400 absolute left-3.5 top-3.5" />
-          </div>
-          <button
-            id="btn-verify-nik"
-            onClick={() => handleVerifyNik()}
-            disabled={verifying || deviceLocked || electionData?.status !== 'ACTIVE'}
-            className="bg-blue-800 hover:bg-blue-900 text-white font-bold px-6 py-3 rounded-lg text-sm transition-all shadow border border-blue-950 flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed shrink-0 uppercase tracking-wider"
-          >
-            {verifying ? (
-              <span>Memeriksa...</span>
-            ) : (
-              <>
-                <UserCheck className="w-4 h-4" />
-                <span>Cek Nomor WA</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Testing helper shortcuts */}
-        {sampleDptList.length > 0 && !verifiedVoter && (
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 text-xs space-y-2">
-            <span className="text-slate-600 font-bold uppercase text-[11px] tracking-wider">Contoh Nomor WA Anggota Terdaftar di Grup WA (Klik untuk tes):</span>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {sampleDptList.map((m) => (
-                <button
-                  key={m.id}
-                  onClick={() => {
-                    setNikInput(m.nik);
-                    handleVerifyNik(m.nik);
-                  }}
-                  className={`px-2.5 py-1 rounded border text-xs font-mono font-bold transition-all ${
-                    m.hasVoted
-                      ? 'bg-slate-200 border-slate-300 text-slate-400 line-through'
-                      : 'bg-white border-blue-400 text-blue-900 hover:bg-blue-50'
-                  }`}
-                >
-                  {m.nik} ({m.nama}) {m.hasVoted ? '✓' : ''}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Error message box */}
-        {errorMessage && (
-          <div className="p-4 rounded-lg bg-rose-50 border-2 border-rose-300 text-rose-800 text-sm flex items-start space-x-3">
-            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-            <span className="font-semibold">{errorMessage}</span>
-          </div>
-        )}
-
-        {/* Verified Voter Identity Card */}
-        {verifiedVoter && (
-          <div className="bg-emerald-50 border-2 border-emerald-500 rounded-lg p-4 sm:p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-            <div className="flex items-center space-x-3">
-              <div className="w-12 h-12 rounded bg-emerald-600 text-white font-black text-xl flex items-center justify-center shrink-0">
-                ✓
-              </div>
-              <div>
-                <div className="text-xs text-emerald-800 font-extrabold uppercase tracking-wider">Anggota Grup WA Terverifikasi</div>
-                <h3 className="text-lg font-black text-emerald-950">{verifiedVoter.nama}</h3>
-                <p className="text-xs text-emerald-800 font-medium">No. WA: <span className="font-mono font-bold">{verifiedVoter.nik}</span> | RT/RW: {verifiedVoter.rtRw}</p>
-              </div>
-            </div>
-            <div className="text-xs font-bold text-emerald-900 bg-emerald-200 px-3 py-1.5 rounded border border-emerald-400 uppercase tracking-wider">
-              Silakan Pilih Calon Di Bawah ⬇
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Step 2: Candidates Grid */}
+      {/* Candidates Grid */}
       <div className="space-y-4">
         <div className="flex items-center space-x-3">
           <span className="w-8 h-8 rounded bg-blue-900 text-white font-black flex items-center justify-center text-sm shadow">
-            2
+            1
           </span>
           <div>
             <h2 className="text-xl font-black text-slate-900 uppercase tracking-wide">Surat Suara Calon Ketua</h2>
-            <p className="text-xs text-slate-500">Pilih salah satu kandidat Ketua Karang Taruna di bawah ini</p>
+            <p className="text-xs text-slate-500 font-medium">Klik tombol "PILIH" pada kandidat pilihan Anda di bawah ini (1 Perangkat = 1 Suara)</p>
           </div>
         </div>
 
@@ -335,22 +230,30 @@ export const VotingTab: React.FC<VotingTabProps> = ({ electionData, onInitiateVo
                   <button
                     id={`btn-vote-candidate-${candidate.noUrut}`}
                     onClick={() => {
-                      if (!verifiedVoter) {
-                        setErrorMessage('Silakan lakukan Verifikasi NIK DPT terlebih dahulu di langkah 1!');
-                        window.scrollTo({ top: 0, behavior: 'smooth' });
-                        return;
-                      }
-                      onInitiateVote(candidate, verifiedVoter);
+                      const defaultDeviceVoter: DPTMember = {
+                        id: 'dev-voter',
+                        nik: 'DIRECT_DEVICE_VOTE',
+                        nama: 'Pemilih (Perangkat Terverifikasi)',
+                        rtRw: '1 Perangkat 1 Suara',
+                        hasVoted: false
+                      };
+                      onInitiateVote(candidate, defaultDeviceVoter);
                     }}
                     disabled={deviceLocked || electionData?.status !== 'ACTIVE'}
                     className={`w-full py-3 px-4 rounded-lg font-black text-sm transition-all shadow flex items-center justify-center space-x-2 border uppercase tracking-wider ${
-                      verifiedVoter
-                        ? 'bg-blue-700 hover:bg-blue-800 text-white border-blue-900 shadow-md hover:scale-[1.01]'
-                        : 'bg-slate-200 text-slate-600 border-slate-300 hover:bg-slate-300'
+                      !deviceLocked && electionData?.status === 'ACTIVE'
+                        ? 'bg-blue-700 hover:bg-blue-800 text-white border-blue-900 shadow-md hover:scale-[1.01] cursor-pointer'
+                        : 'bg-slate-200 text-slate-500 border-slate-300 cursor-not-allowed'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     <Check className="w-5 h-5" />
-                    <span>{verifiedVoter ? `PILIH NOMOR ${candidate.noUrut}` : 'VERIFIKASI NIK DAHULU'}</span>
+                    <span>
+                      {deviceLocked
+                        ? 'PERANGKAT SUDAH MEMILIH'
+                        : electionData?.status !== 'ACTIVE'
+                        ? 'VOTING DITUTUP'
+                        : `PILIH NOMOR ${candidate.noUrut}`}
+                    </span>
                   </button>
                 </div>
               </div>

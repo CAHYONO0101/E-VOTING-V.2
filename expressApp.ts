@@ -623,34 +623,10 @@ app.post(['/api/election/vote', '/election/vote'], (req, res) => {
       });
     }
 
-    if (!nik || !candidateId) {
+    if (!candidateId) {
       return res.status(400).json({
         success: false,
-        message: 'Data pemilih dan pilihan kandidat tidak lengkap.'
-      });
-    }
-
-    const cleanNik = String(nik).trim();
-    const normInput = normalizePhone(cleanNik);
-
-    const member = (event.dpt || []).find(m => {
-      if (!m || !m.nik) return false;
-      if (m.nik === cleanNik || m.nik.toLowerCase() === cleanNik.toLowerCase()) return true;
-      if (normInput && normalizePhone(m.nik) === normInput) return true;
-      return false;
-    });
-
-    if (!member) {
-      return res.status(400).json({
-        success: false,
-        message: `Nomor WhatsApp tidak terdaftar di ${event.orgName}.`
-      });
-    }
-
-    if (member.hasVoted) {
-      return res.status(400).json({
-        success: false,
-        message: `Hak pilih untuk "${member.nama}" (${member.nik}) sudah digunakan sebelumnya.`
+        message: 'Pilihan kandidat tidak ditemukan.'
       });
     }
 
@@ -674,16 +650,38 @@ app.post(['/api/election/vote', '/election/vote'], (req, res) => {
     }
 
     const voteTime = new Date().toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' });
-    
+    let voterName = 'Pemilih Terverifikasi (1 Perangkat 1 Suara)';
+    let cleanNik = nik ? String(nik).trim() : '';
+
+    if (cleanNik) {
+      const normInput = normalizePhone(cleanNik);
+      const member = (event.dpt || []).find(m => {
+        if (!m || !m.nik) return false;
+        if (m.nik === cleanNik || m.nik.toLowerCase() === cleanNik.toLowerCase()) return true;
+        if (normInput && normalizePhone(m.nik) === normInput) return true;
+        return false;
+      });
+
+      if (member) {
+        if (member.hasVoted) {
+          return res.status(400).json({
+            success: false,
+            message: `Hak pilih untuk "${member.nama}" (${member.nik}) sudah digunakan sebelumnya.`
+          });
+        }
+        member.hasVoted = true;
+        member.votedAt = voteTime;
+        voterName = member.nama;
+      }
+    }
+
     candidate.jumlahSuara = (candidate.jumlahSuara || 0) + 1;
-    member.hasVoted = true;
-    member.votedAt = voteTime;
 
     const deviceRecord: DeviceRecord = {
       deviceId: deviceId || 'unknown_dev',
       fingerprintHash: fingerprintHash || 'unknown_fp',
       ip: String(clientIp),
-      nik: member.nik,
+      nik: cleanNik || `DEV-${(deviceId || 'ANON').slice(0, 8)}`,
       votedAt: voteTime
     };
     if (!Array.isArray(event.votedDevices)) event.votedDevices = [];
@@ -695,7 +693,7 @@ app.post(['/api/election/vote', '/election/vote'], (req, res) => {
       success: true,
       message: 'Suara Anda berhasil dikirim dan dicatat secara sah!',
       data: {
-        voterName: member.nama,
+        voterName,
         candidateName: candidate.nama,
         noUrut: candidate.noUrut,
         votedAt: voteTime

@@ -45,9 +45,9 @@ export const ConfirmVoteModal: React.FC<ConfirmVoteModalProps> = ({
 
         {/* Voter Details */}
         <div className="bg-slate-50 rounded-lg p-3 border-2 border-slate-300 text-xs text-slate-800 space-y-1">
-          <div className="text-blue-900 font-black uppercase text-[10px]">Identitas Anggota Grup WA</div>
-          <div className="font-extrabold text-slate-900 text-sm uppercase">{voter.nama}</div>
-          <div className="font-mono text-slate-600 font-bold">No. WA: {voter.nik} ({voter.rtRw})</div>
+          <div className="text-blue-900 font-black uppercase text-[10px]">Metode Pemilihan & Verifikasi</div>
+          <div className="font-extrabold text-slate-900 text-sm uppercase">{voter.nama || 'Pemilih Terverifikasi'}</div>
+          <div className="text-slate-600 font-medium">Sistem 1 Perangkat 1 Suara (Perangkat Aktif Terdeteksi)</div>
         </div>
 
         {/* Selected Candidate Card Preview */}
