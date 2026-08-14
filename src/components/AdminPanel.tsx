@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Shield, ShieldAlert, KeyRound, Plus, Trash2, Edit, Users, UserPlus, Upload, RefreshCw, Power, Lock, CheckCircle2, AlertTriangle, Smartphone, Unlock, Download, FileText, Sparkles, Building2, Key, Copy, Check, RotateCcw, X } from 'lucide-react';
+import { Shield, ShieldAlert, KeyRound, Plus, Trash2, Edit, Users, UserPlus, Upload, RefreshCw, Power, Lock, CheckCircle2, AlertTriangle, Smartphone, Unlock, Download, FileText, Sparkles, Building2, Key, Copy, Check, RotateCcw, X, Database, ExternalLink } from 'lucide-react';
 import { Candidate, DPTMember, ElectionData, OrgInfo } from '../types';
 import { KarangTarunaLogo } from './KarangTarunaLogo';
+import { firebaseConfig } from '../lib/firebaseClient';
 
 interface AdminPanelProps {
   electionData: ElectionData | null;
@@ -1011,6 +1012,186 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               >
                 💾 Simpan Identitas & Pengaturan
               </button>
+            </div>
+          </div>
+
+          {/* Konfigurasi Firebase & Vercel API Keys */}
+          <div className="bg-white border-2 border-slate-300 rounded-lg p-6 shadow-sm space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b-2 border-slate-200 pb-3">
+              <div className="flex items-center space-x-3">
+                <div className="p-2.5 bg-amber-100 border border-amber-300 rounded-lg text-amber-800 shrink-0">
+                  <Database className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-black text-slate-900 text-base uppercase">Konfigurasi API Firebase (Vercel)</h3>
+                  <p className="text-xs text-slate-500 font-medium">Variabel environment untuk sinkronisasi database saat deploy ke Vercel</p>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  const allEnv = [
+                    `VITE_FIREBASE_API_KEY="${firebaseConfig.apiKey || ''}"`,
+                    `VITE_FIREBASE_AUTH_DOMAIN="${firebaseConfig.authDomain || ''}"`,
+                    `VITE_FIREBASE_PROJECT_ID="${firebaseConfig.projectId || ''}"`,
+                    `VITE_FIREBASE_STORAGE_BUCKET="${firebaseConfig.storageBucket || ''}"`,
+                    `VITE_FIREBASE_MESSAGING_SENDER_ID="${firebaseConfig.messagingSenderId || ''}"`,
+                    `VITE_FIREBASE_APP_ID="${firebaseConfig.appId || ''}"`,
+                    `VITE_FIREBASE_DATABASE_ID="${firebaseConfig.firestoreDatabaseId || ''}"`
+                  ].join('\n');
+                  navigator.clipboard.writeText(allEnv);
+                  showToast('Semua variabel environment Firebase berhasil disalin!');
+                }}
+                className="bg-slate-900 hover:bg-slate-800 text-amber-300 border border-slate-700 px-4 py-2 rounded-lg text-xs font-bold flex items-center justify-center gap-1.5 shadow transition-all shrink-0"
+              >
+                <Copy className="w-3.5 h-3.5" />
+                <span>Salin Semua untuk Vercel (.env)</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+              {/* VITE_FIREBASE_API_KEY */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="font-mono font-bold text-slate-700 uppercase text-[11px]">VITE_FIREBASE_API_KEY</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(firebaseConfig.apiKey || '');
+                      showToast('VITE_FIREBASE_API_KEY disalin!');
+                    }}
+                    className="text-blue-700 hover:underline font-bold text-[10px] flex items-center gap-0.5"
+                  >
+                    <Copy className="w-3 h-3" /> Salin
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  value={firebaseConfig.apiKey || ''}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 text-xs font-semibold focus:outline-none"
+                />
+              </div>
+
+              {/* VITE_FIREBASE_AUTH_DOMAIN */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="font-mono font-bold text-slate-700 uppercase text-[11px]">VITE_FIREBASE_AUTH_DOMAIN</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(firebaseConfig.authDomain || '');
+                      showToast('VITE_FIREBASE_AUTH_DOMAIN disalin!');
+                    }}
+                    className="text-blue-700 hover:underline font-bold text-[10px] flex items-center gap-0.5"
+                  >
+                    <Copy className="w-3 h-3" /> Salin
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  value={firebaseConfig.authDomain || ''}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 text-xs font-semibold focus:outline-none"
+                />
+              </div>
+
+              {/* VITE_FIREBASE_PROJECT_ID */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="font-mono font-bold text-slate-700 uppercase text-[11px]">VITE_FIREBASE_PROJECT_ID</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(firebaseConfig.projectId || '');
+                      showToast('VITE_FIREBASE_PROJECT_ID disalin!');
+                    }}
+                    className="text-blue-700 hover:underline font-bold text-[10px] flex items-center gap-0.5"
+                  >
+                    <Copy className="w-3 h-3" /> Salin
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  value={firebaseConfig.projectId || ''}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 text-xs font-semibold focus:outline-none"
+                />
+              </div>
+
+              {/* VITE_FIREBASE_STORAGE_BUCKET */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="font-mono font-bold text-slate-700 uppercase text-[11px]">VITE_FIREBASE_STORAGE_BUCKET</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(firebaseConfig.storageBucket || '');
+                      showToast('VITE_FIREBASE_STORAGE_BUCKET disalin!');
+                    }}
+                    className="text-blue-700 hover:underline font-bold text-[10px] flex items-center gap-0.5"
+                  >
+                    <Copy className="w-3 h-3" /> Salin
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  value={firebaseConfig.storageBucket || ''}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 text-xs font-semibold focus:outline-none"
+                />
+              </div>
+
+              {/* VITE_FIREBASE_MESSAGING_SENDER_ID */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="font-mono font-bold text-slate-700 uppercase text-[11px]">VITE_FIREBASE_MESSAGING_SENDER_ID</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(firebaseConfig.messagingSenderId || '');
+                      showToast('VITE_FIREBASE_MESSAGING_SENDER_ID disalin!');
+                    }}
+                    className="text-blue-700 hover:underline font-bold text-[10px] flex items-center gap-0.5"
+                  >
+                    <Copy className="w-3 h-3" /> Salin
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  value={firebaseConfig.messagingSenderId || ''}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 text-xs font-semibold focus:outline-none"
+                />
+              </div>
+
+              {/* VITE_FIREBASE_APP_ID */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  <label className="font-mono font-bold text-slate-700 uppercase text-[11px]">VITE_FIREBASE_APP_ID</label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(firebaseConfig.appId || '');
+                      showToast('VITE_FIREBASE_APP_ID disalin!');
+                    }}
+                    className="text-blue-700 hover:underline font-bold text-[10px] flex items-center gap-0.5"
+                  >
+                    <Copy className="w-3 h-3" /> Salin
+                  </button>
+                </div>
+                <input
+                  type="text"
+                  readOnly
+                  value={firebaseConfig.appId || ''}
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-mono text-slate-800 text-xs font-semibold focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-[11px] text-blue-900 leading-relaxed">
+              💡 <strong>Panduan Vercel:</strong> Buka Dashboard Vercel Proyek Anda → Masuk ke <strong>Settings</strong> → <strong>Environment Variables</strong> → Masukkan variabel di atas agar database Firestore tetap tersinkronisasi otomatis saat diakses publik.
             </div>
           </div>
 
